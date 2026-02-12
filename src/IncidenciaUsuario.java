@@ -32,7 +32,38 @@ public class IncidenciaUsuario extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         this.idUsuario = id;
+        cargarCombosDesdeBD();
     }
+    private void cargarCombosDesdeBD() {
+
+    cargarCombo(jComboBoxTipo,
+        "SELECT descripcion FROM TIPO_INCIDENCIA ORDER BY descripcion");
+
+    cargarCombo(jComboBoxEspacio,
+        "SELECT nombre FROM ESPACIO ORDER BY nombre");
+
+    cargarCombo(jComboBoxDispositivo,
+        "SELECT nombre FROM DISPOSITIVO ORDER BY nombre");
+}
+    private void cargarCombo(javax.swing.JComboBox<String> combo, String sql) {
+
+    combo.removeAllItems();
+
+    try (Connection conn = ConexionDB.conectar();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            combo.addItem(rs.getString(1)); 
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error cargando combo: " + e.getMessage());
+    }
+}
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -69,20 +100,15 @@ public class IncidenciaUsuario extends javax.swing.JFrame {
 
         jLabel3.setText("Tipo de incidencia: ");
 
-        jComboBoxTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Problema de impresión", "Problema de red", "Problema de hardware", "Problema de software", "Otro" }));
         jComboBoxTipo.addActionListener(this::jComboBoxTipoActionPerformed);
 
         jLabel4.setText("Espacio de incidencia: ");
 
-        jComboBoxEspacio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Oficina 1", "Oficina 2", "Cuarto de la limpieza", "Aula 1", "Aula 2", "Servicio hombres", "Servicio mujeres" }));
-
         jLabel5.setText("Dispositivo:");
-
-        jComboBoxDispositivo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Impresora HP", "PC Torre Dell", "Teléfono IP", "Proyector Epson", "PC Profesor", "Pizarra Digital" }));
 
         jLabel6.setText("Prioridad: ");
 
-        jComboBoxPrioridad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Baja", "Media", "Alta" }));
+        jComboBoxPrioridad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Alta", "Media", "Baja" }));
 
         jLabel7.setText("Descripción: ");
 
@@ -304,7 +330,7 @@ public class IncidenciaUsuario extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al crear incidencia: " + e.getMessage());
         }
-        
+
 
     }//GEN-LAST:event_jButtonCrearActionPerformed
 
